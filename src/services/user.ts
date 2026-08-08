@@ -1,4 +1,5 @@
 import { User, IUser } from "../models/user";
+import { UploadService } from "./upload";
 
 export interface CreateUserInput {
   name: string;

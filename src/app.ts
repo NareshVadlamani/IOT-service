@@ -1,6 +1,7 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import userRoutes from "./routes/user";
+import uploadRoutes from "./routes/upload";
 
 const app: Application = express();
 
@@ -10,6 +11,7 @@ app.use(express.json({ limit: "10mb" }));
 
 // Routes
 app.use("/api/users", userRoutes);
+app.use("/api/upload", uploadRoutes);
 
 // Centralized Error Handler Middleware
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
