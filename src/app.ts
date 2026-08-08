@@ -1,5 +1,6 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
+import morgan from "morgan";
 import userRoutes from "./routes/user";
 import uploadRoutes from "./routes/upload";
 
@@ -8,6 +9,7 @@ const app: Application = express();
 // Middlewares
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
+app.use(morgan("dev"));
 
 // Routes
 app.use("/api/users", userRoutes);

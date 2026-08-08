@@ -12,10 +12,12 @@ export class UploadController {
         res
           .status(400)
           .json({ success: false, message: "No image file provided" });
+        console.log("image uploader failed");
         return;
       }
 
       const result = await UploadService.uploadImage(req.file.buffer);
+      console.log("image uploader success");
 
       res.status(200).json({
         success: true,

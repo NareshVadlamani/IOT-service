@@ -14,11 +14,14 @@ export class UserController {
         res
           .status(400)
           .json({ success: false, message: "Name and imageUrl are required" });
+        console.log("User creation failed");
+
         return;
       }
 
       const user = await UserService.createUser({ name, imageUrl });
       res.status(201).json({ success: true, data: user });
+      console.log("User created");
     } catch (error) {
       next(error);
     }
