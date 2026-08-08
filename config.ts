@@ -5,5 +5,6 @@ dotenv.config();
 const ENV = process.env;
 
 export default {
-  port: parseInt(ENV.PORT),
+  port: ENV.PORT,
+  jwtSecret: ENV.JWT_SECRET,
 };
