@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { UserService } from "../services/user";
-
+import { emitLog } from "../config/socket";
 export class UserController {
-  static async createUser(
+  static async addUser(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -20,6 +20,9 @@ export class UserController {
       }
 
       const user = await UserService.createUser({ name, imageUrl });
+      emitLog("success", `User '${name}' created successfully`, {
+        userId: user._id,
+      });
       res.status(201).json({ success: true, data: user });
       console.log("User created");
     } catch (error) {

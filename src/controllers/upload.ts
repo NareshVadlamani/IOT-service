@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { UploadService } from "../services/upload";
+import { emitImageUpload } from "../config/socket";
 
 export class UploadController {
   static async handleImageUpload(
@@ -18,6 +19,10 @@ export class UploadController {
 
       const result = await UploadService.uploadImage(req.file.buffer);
       console.log("image uploader success");
+
+      emitImageUpload("success", "Image upload created successfully", {
+        imageURl: result.secure_url,
+      });
 
       res.status(200).json({
         success: true,
