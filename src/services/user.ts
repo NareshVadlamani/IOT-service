@@ -1,4 +1,4 @@
-import { User, IUser } from "../models/user";
+import { UserModel, IUser } from "../models/user";
 import { UploadService } from "./upload";
 
 export interface CreateUserInput {
@@ -8,10 +8,10 @@ export interface CreateUserInput {
 
 export class UserService {
   static async createUser(data: CreateUserInput): Promise<IUser> {
-    return await User.create(data);
+    return await UserModel.create(data);
   }
 
   static async getAllUsers(): Promise<IUser[]> {
-    return await User.find().sort({ createdAt: -1 });
+    return await UserModel.find().sort({ createdAt: -1 });
   }
 }

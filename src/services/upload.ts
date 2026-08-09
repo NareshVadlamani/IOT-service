@@ -1,10 +1,11 @@
 import cloudinary from "../config/cloudinary";
 import { UploadApiResponse } from "cloudinary";
+import { ImageModel } from "../models/image";
 
 export class UploadService {
   static async uploadImage(
     fileBuffer: Buffer,
-    folder = "user_avatars",
+    folder: string,
   ): Promise<UploadApiResponse> {
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
@@ -22,6 +23,27 @@ export class UploadService {
       );
 
       uploadStream.end(fileBuffer);
+    });
+  }
+
+  static async saveImagePath(url: string, public_id: string, eventId: string) {
+    return await ImageModel.create({
+      url: url,
+      publicId: public_id,
+      eventId: eventId,
+    });
+  }
+
+  static async uploadImageAndSave(
+    fileBuffer: Buffer,
+    eventId: string,
+    folder = "user_avatars",
+  ) {
+    const res = await this.uploadImage(fileBuffer, folder);
+    return await ImageModel.create({
+      url: res.url,
+      publicId: res.public_id,
+      eventId: eventId,
     });
   }
 }

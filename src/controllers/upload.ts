@@ -7,29 +7,42 @@ export class UploadController {
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<void> {
+  ) {
+    const { eventId } = req.body; // 👈 Extracted from multipart form-data
+    const file = req.file;
     try {
-      if (!req.file) {
+      if (!file) {
         res
           .status(400)
           .json({ success: false, message: "No image file provided" });
         console.log("image uploader failed");
         return;
       }
+      // 1. Validation checks
+      if (!eventId) {
+        return res.status(400).json({
+          success: false,
+          error: "eventId is required in form-data",
+        });
+      }
 
-      const result = await UploadService.uploadImage(req.file.buffer);
+      const result = await UploadService.uploadImageAndSave(
+        file.buffer,
+        eventId,
+      );
       console.log("image uploader success");
 
       emitImageUpload("success", "Image upload created successfully", {
-        imageURl: result.secure_url,
+        imageURl: result.url,
+        eventId: result.eventId,
       });
 
       res.status(200).json({
         success: true,
         message: "Image uploaded successfully",
         data: {
-          url: result.secure_url,
-          public_id: result.public_id,
+          url: result.url,
+          public_id: result.publicId,
         },
       });
     } catch (error) {
