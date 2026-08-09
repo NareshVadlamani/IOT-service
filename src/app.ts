@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import userRoutes from "./routes/user";
 import uploadRoutes from "./routes/upload";
+import userEntryRoutes from "./routes/userEntry";
 
 const app: Application = express();
 
@@ -13,6 +14,7 @@ app.use(morgan("dev"));
 
 // Routes
 app.use("/api/users", userRoutes);
+app.use("/api/usersEntry", userEntryRoutes);
 app.use("/api/upload", uploadRoutes);
 
 // Centralized Error Handler Middleware
