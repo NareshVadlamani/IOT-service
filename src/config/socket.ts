@@ -6,20 +6,22 @@ let io: SocketIOServer | null = null;
 export const initSocket = (httpServer: HTTPServer): SocketIOServer => {
   io = new SocketIOServer(httpServer, {
     cors: {
-      origin: "*", // Adjust to your Next.js domain (e.g. 'https://raithunestham.in') in production
+      origin: [
+        "https://iot.raithunestham.in",
+        "https://www.iot.raithunestham.in",
+        "http://localhost:3000",
+      ],
       methods: ["GET", "POST"],
+      credentials: true,
     },
+    transports: ["polling", "websocket"], // Allow both polling and websockets
   });
 
   io.on("connection", (socket) => {
-    console.log(`🔌 Client connected to Socket.IO: ${socket.id}`);
-
-    socket.on("disconnect", () => {
-      console.log(`❌ Client disconnected: ${socket.id}`);
-    });
+    console.log(`🔌 Socket client connected: ${socket.id}`);
   });
 
-  return io;
+  return io as SocketIOServer;
 };
 
 // Global logger helper to broadcast logs to all connected frontend clients
