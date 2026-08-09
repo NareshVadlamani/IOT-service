@@ -1,10 +1,14 @@
 import dotenv from "dotenv";
 import app from "./app";
+import http from "http";
 import { connectDB } from "./config/db";
+import { initSocket } from "./config/socket";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
+initSocket(server);
 
 // Connect to Database and start server
 connectDB().then(() => {
