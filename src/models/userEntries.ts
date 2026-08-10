@@ -1,8 +1,8 @@
 import { Schema, model, Document } from "mongoose";
 
 enum LogReasonType {
-  FINGER_MATCHED = "FINGER MATCHED",
-  FINGER_FAILED = "FINGER FAILED",
+  FINGERPRINT_MATCHED = "FINGER MATCHED",
+  FINGERPRINT_FAILED = "FINGER FAILED",
 }
 
 export interface IUserEntry extends Document {
