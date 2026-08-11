@@ -9,6 +9,18 @@ export interface CombinedLog {
   imageId: string | null;
 }
 
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface PaginatedCombinedLogs {
+  entries: CombinedLog[];
+  pagination: PaginationMeta;
+}
+
 export class LogService {
   static async getCombinedLog(eventId: string): Promise<CombinedLog> {
     const [userEntry, image] = await Promise.all([
@@ -22,6 +34,64 @@ export class LogService {
       userEntryId: userEntry?.id ?? null,
       imageUrl: image?.url ?? null,
       imageId: image?.id ?? null,
+    };
+  }
+
+  static async getAllCombinedLogs(
+    page: number,
+    limit: number,
+  ): Promise<PaginatedCombinedLogs> {
+    const skip = (page - 1) * limit;
+
+    const [entries, [totalResult]] = await Promise.all([
+      UserEntryModel.aggregate<CombinedLog>([
+        { $sort: { createdAt: -1 } },
+        {
+          $group: {
+            _id: "$eventId",
+            reason: { $first: "$reason" },
+            userEntryId: { $first: "$_id" },
+            createdAt: { $first: "$createdAt" },
+          },
+        },
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: ImageModel.collection.name,
+            localField: "_id",
+            foreignField: "eventId",
+            as: "image",
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            eventId: "$_id",
+            reason: 1,
+            userEntryId: 1,
+            imageUrl: { $arrayElemAt: ["$image.url", 0] },
+            imageId: { $arrayElemAt: ["$image._id", 0] },
+          },
+        },
+      ]),
+      UserEntryModel.aggregate<{ total: number }>([
+        { $group: { _id: "$eventId" } },
+        { $count: "total" },
+      ]),
+    ]);
+
+    const total = totalResult?.total ?? 0;
+
+    return {
+      entries,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 }
