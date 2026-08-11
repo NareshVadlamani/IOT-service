@@ -11,8 +11,4 @@ export class UserEntryService {
   ): Promise<IUserEntry> {
     return await UserEntryModel.create(data);
   }
-
-  static async getAllUserEntries(): Promise<IUserEntry[]> {
-    return await UserEntryModel.find().sort({ createdAt: -1 });
-  }
 }

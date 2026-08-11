@@ -36,13 +36,27 @@ export class UserEntryController {
   }
 
   static async getAllUsersEntries(
-    _req: Request,
+    req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> {
     try {
-      const users = await UserEntryService.getAllUserEntries();
-      res.status(200).json({ success: true, data: users });
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 20;
+
+      if (page < 1 || limit < 1) {
+        res
+          .status(400)
+          .json({ success: false, message: "page and limit must be positive integers" });
+
+        return;
+      }
+
+      const { entries, pagination } = await LogService.getAllCombinedLogs(
+        page,
+        limit,
+      );
+      res.status(200).json({ success: true, data: entries, pagination });
     } catch (error) {
       next(error);
     }
