@@ -8,6 +8,8 @@ enum LogReasonType {
 export interface IUserEntry extends Document {
   reason: LogReasonType;
   eventId: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const userEntriesSchema = new Schema<IUserEntry>(
