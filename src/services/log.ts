@@ -7,6 +7,7 @@ export interface CombinedLog {
   userEntryId: string | null;
   imageUrl: string | null;
   imageId: string | null;
+  createdAt: Date | null;
 }
 
 export interface PaginationMeta {
@@ -34,6 +35,7 @@ export class LogService {
       userEntryId: userEntry?.id ?? null,
       imageUrl: image?.url ?? null,
       imageId: image?.id ?? null,
+      createdAt: userEntry?.createdAt ?? null,
     };
   }
 
@@ -71,6 +73,7 @@ export class LogService {
             eventId: "$_id",
             reason: 1,
             userEntryId: 1,
+            createdAt: 1,
             imageUrl: { $arrayElemAt: ["$image.url", 0] },
             imageId: { $arrayElemAt: ["$image._id", 0] },
           },
