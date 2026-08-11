@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { UploadService } from "../services/upload";
-import { emitImageUpload } from "../config/socket";
+import { LogService } from "../services/log";
+import { emitEntryLog } from "../config/socket";
 
 export class UploadController {
   static async handleImageUpload(
@@ -32,10 +33,12 @@ export class UploadController {
       );
       console.log("image uploader success");
 
-      emitImageUpload("success", "Image upload created successfully", {
-        imageURl: result.url,
-        eventId: result.eventId,
-      });
+      const combinedLog = await LogService.getCombinedLog(eventId);
+      emitEntryLog(
+        "success",
+        "Image upload created successfully",
+        combinedLog,
+      );
 
       res.status(200).json({
         success: true,

@@ -1,5 +1,6 @@
 import { Server as SocketIOServer } from "socket.io";
 import { Server as HTTPServer } from "http";
+import type { CombinedLog } from "../services/log";
 
 let io: SocketIOServer | null = null;
 
@@ -28,7 +29,7 @@ export const initSocket = (httpServer: HTTPServer): SocketIOServer => {
 export const emitLog = (
   level: "info" | "error" | "success",
   message: string,
-  data?: any,
+  data?: unknown,
 ) => {
   if (io) {
     const logPayload = {
@@ -41,10 +42,11 @@ export const emitLog = (
   }
 };
 
-export const emitImageUpload = (
+// Broadcasts the combined user-entry + image log to all connected frontend clients
+export const emitEntryLog = (
   level: "info" | "error" | "success",
   message: string,
-  data?: any,
+  data: CombinedLog,
 ) => {
   if (io) {
     const logPayload = {
@@ -53,6 +55,6 @@ export const emitImageUpload = (
       message,
       data,
     };
-    io.emit("new_image", logPayload);
+    io.emit("entry_log", logPayload);
   }
 };

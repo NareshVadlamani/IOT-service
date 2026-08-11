@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { emitLog } from "../config/socket";
+import { emitEntryLog } from "../config/socket";
 import { UserEntryService } from "../services/userEntries";
+import { LogService } from "../services/log";
 
 export class UserEntryController {
   static async addUserEntry(
@@ -21,9 +22,12 @@ export class UserEntryController {
       }
 
       const user = await UserEntryService.createUserEntry({ reason, eventId });
-      emitLog("success", `User Entry '${eventId}' created successfully`, {
-        userId: user._id,
-      });
+      const combinedLog = await LogService.getCombinedLog(eventId);
+      emitEntryLog(
+        "success",
+        `User Entry '${eventId}' created successfully`,
+        combinedLog,
+      );
       res.status(201).json({ success: true, data: user });
       console.log("User Entry created");
     } catch (error) {
