@@ -69,17 +69,21 @@ export class UserEntryController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const eventId = String(req.query.eventId);
-      if (!eventId) {
+      const { eventId } = req.query;
+
+      // Check if eventId exists and isn't empty BEFORE casting
+      if (!eventId || typeof eventId !== "string" || !eventId.trim()) {
         res.status(400).json({
           success: false,
           message: "EventId is required",
         });
-        return;
+        return; // Prevents continuing execution
       }
 
       const log = await LogService.getCombinedLogByEventId(eventId);
-      res.send(200).json({ success: true, data: log });
+
+      // Fixed: status(200) instead of send(200)
+      res.status(200).json({ success: true, data: log });
     } catch (error) {
       next(error);
     }
