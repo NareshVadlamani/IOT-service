@@ -45,9 +45,10 @@ export class UserEntryController {
       const limit = Number(req.query.limit) || 20;
 
       if (page < 1 || limit < 1) {
-        res
-          .status(400)
-          .json({ success: false, message: "page and limit must be positive integers" });
+        res.status(400).json({
+          success: false,
+          message: "page and limit must be positive integers",
+        });
 
         return;
       }
@@ -57,6 +58,28 @@ export class UserEntryController {
         limit,
       );
       res.status(200).json({ success: true, data: entries, pagination });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getUserEntry(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const eventId = String(req.query.eventId);
+      if (!eventId) {
+        res.status(400).json({
+          success: false,
+          message: "EventId is required",
+        });
+        return;
+      }
+
+      const log = await LogService.getCombinedLogByEventId(eventId);
+      res.send(200).json({ success: true, data: log });
     } catch (error) {
       next(error);
     }
